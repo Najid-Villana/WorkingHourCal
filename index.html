@@ -2,13 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Labour Timecard - Alphard Marine</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Timecard</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
@@ -16,6 +23,45 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 10px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Toast notifications for mobile-friendly feedback */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 14px;
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.3s ease;
+            max-width: 90%;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast.success {
+            background: #28a745;
+        }
+
+        .toast.error {
+            background: #dc3545;
+        }
+
+        .toast.warning {
+            background: #ffc107;
+            color: #333;
         }
 
         .container {
@@ -494,7 +540,7 @@
                 max-width: 100%;
             }
             
-            .calculate-btn, .reset-btn, .download-btn {
+            .calculate-btn, .reset-btn, .download-btn, .quick-fill-section {
                 display: none;
             }
             
@@ -507,18 +553,294 @@
             }
         }
 
+        @media (max-width: 600px) {
+            body {
+                padding: 0;
+            }
+
+            .container {
+                border-radius: 0;
+                min-height: 100vh;
+            }
+
+            .header {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 16px;
+            }
+
+            .header p {
+                font-size: 11px;
+            }
+
+            .form-section {
+                padding: 15px;
+            }
+
+            .info-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .input-group {
+                margin-bottom: 12px;
+            }
+
+            .input-group label {
+                font-size: 12px;
+            }
+
+            .input-group input {
+                padding: 12px;
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+
+            /* Quick Fill Mobile Optimization */
+            .quick-fill-header h3 {
+                font-size: 13px;
+            }
+
+            .quick-fill-content {
+                padding: 10px;
+            }
+
+            .quick-fill-card {
+                padding: 12px;
+                margin-bottom: 10px;
+            }
+
+            .quick-fill-card h4 {
+                font-size: 12px;
+                margin-bottom: 10px;
+            }
+
+            .default-times-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .day-selector {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 6px;
+            }
+
+            .checkbox-label {
+                font-size: 11px;
+                padding: 6px 4px;
+                justify-content: center;
+            }
+
+            .checkbox-label input {
+                margin-right: 3px;
+            }
+
+            .range-inputs {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .actions-grid {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+
+            .action-btn {
+                padding: 12px;
+                font-size: 13px;
+            }
+
+            .template-input {
+                font-size: 14px;
+                padding: 12px;
+            }
+
+            .template-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .template-actions {
+                width: 100%;
+            }
+
+            .template-actions button {
+                flex: 1;
+            }
+
+            /* Calendar Optimization */
+            .calendar-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .days-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 6px;
+            }
+
+            .day-card {
+                padding: 6px 4px;
+            }
+
+            .day-number {
+                font-size: 11px;
+                font-weight: 700;
+                margin-bottom: 4px;
+            }
+
+            .time-label {
+                font-size: 8px;
+                margin-bottom: 2px;
+            }
+
+            .time-input {
+                padding: 8px 4px;
+                font-size: 12px;
+                margin-bottom: 3px;
+            }
+
+            .overtime-checkbox {
+                margin-top: 3px;
+            }
+
+            .overtime-checkbox label {
+                font-size: 8px;
+            }
+
+            /* Summary Section */
+            .summary-section {
+                padding: 15px;
+            }
+
+            .summary-title {
+                font-size: 15px;
+                margin-bottom: 12px;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+
+            .summary-item {
+                padding: 10px;
+            }
+
+            .summary-item label {
+                font-size: 10px;
+            }
+
+            .summary-item .value {
+                font-size: 18px;
+            }
+
+            /* Buttons */
+            .calculate-btn {
+                padding: 14px;
+                font-size: 15px;
+                margin-top: 15px;
+            }
+
+            .reset-btn {
+                padding: 12px;
+                font-size: 13px;
+                margin-top: 8px;
+            }
+
+            .download-btn {
+                padding: 12px;
+                font-size: 13px;
+            }
+        }
+
         @media (max-width: 400px) {
             .days-grid {
+                grid-template-columns: repeat(3, 1fr);
                 gap: 5px;
             }
             
             .day-card {
-                padding: 5px;
+                padding: 5px 3px;
+            }
+
+            .day-number {
+                font-size: 10px;
             }
             
             .time-input {
-                padding: 4px;
+                padding: 6px 2px;
+                font-size: 11px;
+            }
+
+            .time-label {
+                font-size: 7px;
+            }
+
+            .overtime-checkbox label {
+                font-size: 7px;
+            }
+
+            .day-selector {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 14px;
+            }
+
+            .quick-fill-card h4 {
+                font-size: 11px;
+            }
+
+            .action-btn {
+                font-size: 12px;
+                padding: 10px;
+            }
+        }
+
+        /* Landscape mobile optimization */
+        @media (max-width: 900px) and (orientation: landscape) {
+            .days-grid {
+                grid-template-columns: repeat(7, 1fr);
+                gap: 4px;
+            }
+
+            .day-card {
+                padding: 4px 2px;
+            }
+
+            .time-input {
+                padding: 4px 2px;
                 font-size: 10px;
+            }
+
+            .summary-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        /* Better touch targets for mobile */
+        @media (hover: none) and (pointer: coarse) {
+            .time-input, .action-btn, .checkbox-label, input[type="checkbox"] {
+                min-height: 44px; /* iOS recommended touch target */
+            }
+
+            input[type="checkbox"] {
+                width: 20px;
+                height: 20px;
+            }
+
+            .toggle-btn {
+                width: 44px;
+                height: 44px;
             }
         }
     </style>
@@ -526,9 +848,9 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>ALPHARD MARINE EQUIPMENT</h1>
-            <p>Repairing & Maintenance Co.</p>
-            <p style="font-size: 11px; margin-top: 5px;">Labour Timecard</p>
+            <h1>WOrking Hour Calculator</h1>
+            <p>Calculate your Working Hours</p>
+            <p style="font-size: 11px; margin-top: 5px;">-- Timecard --</p>
         </div>
 
         <div class="form-section">
@@ -814,13 +1136,18 @@
             document.getElementById('overtimeHours').textContent = overtimeHours.toFixed(1);
             document.getElementById('totalHours').textContent = totalHours.toFixed(1);
             
+            // Show success message
+            showToast(`✓ Calculated: ${totalHours.toFixed(1)} total hours`, 'success');
+            
             // Smooth scroll to summary
-            document.querySelector('.summary-section').scrollIntoView({ behavior: 'smooth' });
+            setTimeout(() => {
+                document.querySelector('.summary-section').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 300);
         }
 
         // Reset form
         function resetForm() {
-            if (confirm('Are you sure you want to reset all data?')) {
+            showConfirm('Are you sure you want to reset all data?', () => {
                 document.getElementById('name').value = '';
                 document.getElementById('profession').value = '';
                 
@@ -841,7 +1168,9 @@
                 document.getElementById('regularHours').textContent = '0';
                 document.getElementById('overtimeHours').textContent = '0';
                 document.getElementById('totalHours').textContent = '0';
-            }
+                
+                showToast('✓ Form reset complete!', 'success');
+            });
         }
 
         // Event listener for month change
@@ -849,6 +1178,337 @@
 
         // Initialize on load
         window.addEventListener('load', initializeCalendar);
+
+        // Toast notification system (mobile-friendly alternative to alert)
+        function showToast(message, type = 'success') {
+            // Remove existing toast if any
+            const existingToast = document.querySelector('.toast');
+            if (existingToast) {
+                existingToast.remove();
+            }
+
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            // Trigger animation
+            setTimeout(() => toast.classList.add('show'), 10);
+
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Mobile-friendly confirm dialog
+        function showConfirm(message, callback) {
+            if (confirm(message)) {
+                callback();
+            }
+        }
+
+        // Toggle Quick Fill Section
+        function toggleQuickFill() {
+            const content = document.getElementById('quickFillContent');
+            const icon = document.getElementById('toggleIcon');
+            const isOpen = content.classList.toggle('open');
+            icon.textContent = isOpen ? '▲' : '▼';
+            
+            // Scroll to section if opening
+            if (isOpen) {
+                setTimeout(() => {
+                    content.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 100);
+            }
+        }
+
+        // Apply default times to all empty days
+        function applyDefaultTimes() {
+            const defaultAM = document.getElementById('defaultAM').value;
+            const defaultPM = document.getElementById('defaultPM').value;
+            
+            if (!defaultAM && !defaultPM) {
+                showToast('Please set at least one default time!', 'warning');
+                return;
+            }
+            
+            const amTimes = document.querySelectorAll('.am-time');
+            const pmTimes = document.querySelectorAll('.pm-time');
+            
+            let filled = 0;
+            amTimes.forEach((amInput, index) => {
+                if (!amInput.value && defaultAM) {
+                    amInput.value = defaultAM;
+                    amInput.parentElement.classList.add('active');
+                    filled++;
+                }
+                if (!pmTimes[index].value && defaultPM) {
+                    pmTimes[index].value = defaultPM;
+                    pmTimes[index].parentElement.classList.add('active');
+                }
+            });
+            
+            showToast(`✓ Applied times to ${filled} days!`, 'success');
+        }
+
+        // Fill selected working days
+        function fillWorkingDays() {
+            const monthInput = document.getElementById('month').value;
+            if (!monthInput) {
+                showToast('Please select a month first!', 'warning');
+                return;
+            }
+            
+            const defaultAM = document.getElementById('defaultAM').value;
+            const defaultPM = document.getElementById('defaultPM').value;
+            
+            if (!defaultAM && !defaultPM) {
+                showToast('Please set default times first!', 'warning');
+                return;
+            }
+            
+            const selectedDays = [];
+            document.querySelectorAll('.day-checkbox:checked').forEach(checkbox => {
+                selectedDays.push(checkbox.value);
+            });
+            
+            if (selectedDays.length === 0) {
+                showToast('Please select at least one day!', 'warning');
+                return;
+            }
+            
+            const [year, month] = monthInput.split('-');
+            const daysInMonth = new Date(year, month, 0).getDate();
+            
+            const dayMap = {
+                'sunday': 0, 'monday': 1, 'tuesday': 2, 'wednesday': 3,
+                'thursday': 4, 'friday': 5, 'saturday': 6
+            };
+            
+            let filled = 0;
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(year, month - 1, day);
+                const dayOfWeek = date.getDay();
+                const dayName = Object.keys(dayMap).find(key => dayMap[key] === dayOfWeek);
+                
+                if (selectedDays.includes(dayName)) {
+                    const amInput = document.querySelector(`.am-time[data-day="${day}"]`);
+                    const pmInput = document.querySelector(`.pm-time[data-day="${day}"]`);
+                    
+                    if (amInput && !amInput.value && defaultAM) {
+                        amInput.value = defaultAM;
+                        amInput.parentElement.classList.add('active');
+                        filled++;
+                    }
+                    if (pmInput && !pmInput.value && defaultPM) {
+                        pmInput.value = defaultPM;
+                    }
+                }
+            }
+            
+            showToast(`✓ Filled ${filled} working days!`, 'success');
+            
+            // Scroll to calendar
+            setTimeout(() => {
+                document.querySelector('.calendar-header').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 500);
+        }
+
+        // Fill date range
+        function fillDateRange() {
+            const rangeStart = parseInt(document.getElementById('rangeStart').value);
+            const rangeEnd = parseInt(document.getElementById('rangeEnd').value);
+            const defaultAM = document.getElementById('defaultAM').value;
+            const defaultPM = document.getElementById('defaultPM').value;
+            
+            if (!rangeStart || !rangeEnd) {
+                showToast('Please enter both start and end days!', 'warning');
+                return;
+            }
+            
+            if (rangeStart > rangeEnd) {
+                showToast('Start day must be before end day!', 'error');
+                return;
+            }
+            
+            if (!defaultAM && !defaultPM) {
+                showToast('Please set default times first!', 'warning');
+                return;
+            }
+            
+            let filled = 0;
+            for (let day = rangeStart; day <= rangeEnd; day++) {
+                const amInput = document.querySelector(`.am-time[data-day="${day}"]`);
+                const pmInput = document.querySelector(`.pm-time[data-day="${day}"]`);
+                
+                if (amInput && defaultAM) {
+                    amInput.value = defaultAM;
+                    amInput.parentElement.classList.add('active');
+                    filled++;
+                }
+                if (pmInput && defaultPM) {
+                    pmInput.value = defaultPM;
+                }
+            }
+            
+            showToast(`✓ Filled days ${rangeStart} to ${rangeEnd}!`, 'success');
+        }
+
+        // Copy last week pattern
+        function copyLastWeek() {
+            const amTimes = document.querySelectorAll('.am-time');
+            const pmTimes = document.querySelectorAll('.pm-time');
+            const otChecks = document.querySelectorAll('.ot-check');
+            
+            if (amTimes.length < 14) {
+                showToast('Not enough days in the month!', 'warning');
+                return;
+            }
+            
+            let copied = 0;
+            for (let i = 7; i < Math.min(amTimes.length, 14); i++) {
+                const sourceIndex = i - 7;
+                if (amTimes[sourceIndex].value || pmTimes[sourceIndex].value) {
+                    amTimes[i].value = amTimes[sourceIndex].value;
+                    pmTimes[i].value = pmTimes[sourceIndex].value;
+                    otChecks[i].checked = otChecks[sourceIndex].checked;
+                    
+                    if (amTimes[i].value || pmTimes[i].value) {
+                        amTimes[i].parentElement.classList.add('active');
+                        copied++;
+                    }
+                }
+            }
+            
+            showToast(`✓ Copied ${copied} days from last week!`, 'success');
+        }
+
+        // Mark all overtime
+        function markAllOT() {
+            const otChecks = document.querySelectorAll('.ot-check');
+            const amTimes = document.querySelectorAll('.am-time');
+            const pmTimes = document.querySelectorAll('.pm-time');
+            
+            let marked = 0;
+            otChecks.forEach((check, index) => {
+                if (amTimes[index].value || pmTimes[index].value) {
+                    check.checked = true;
+                    marked++;
+                }
+            });
+            
+            showToast(`✓ Marked ${marked} days with overtime!`, 'success');
+        }
+
+        // Clear all overtime
+        function clearAllOT() {
+            const otChecks = document.querySelectorAll('.ot-check');
+            otChecks.forEach(check => check.checked = false);
+            showToast('✓ Cleared all overtime marks!', 'success');
+        }
+
+        // Clear all times
+        function clearAllTimes() {
+            showConfirm('Are you sure you want to clear all times? This cannot be undone.', () => {
+                const amTimes = document.querySelectorAll('.am-time');
+                const pmTimes = document.querySelectorAll('.pm-time');
+                const otChecks = document.querySelectorAll('.ot-check');
+                
+                amTimes.forEach(input => input.value = '');
+                pmTimes.forEach(input => input.value = '');
+                otChecks.forEach(check => check.checked = false);
+                
+                document.querySelectorAll('.day-card').forEach(card => {
+                    card.classList.remove('active');
+                });
+                
+                showToast('✓ All times cleared!', 'success');
+            });
+        }
+
+        // Save template
+        function saveTemplate() {
+            const templateName = document.getElementById('templateName').value.trim();
+            if (!templateName) {
+                showToast('Please enter a template name!', 'warning');
+                return;
+            }
+            
+            const template = {
+                name: templateName,
+                defaultAM: document.getElementById('defaultAM').value,
+                defaultPM: document.getElementById('defaultPM').value,
+                workingDays: []
+            };
+            
+            document.querySelectorAll('.day-checkbox:checked').forEach(checkbox => {
+                template.workingDays.push(checkbox.value);
+            });
+            
+            // Save to localStorage
+            let templates = JSON.parse(localStorage.getItem('labourTemplates') || '[]');
+            templates.push(template);
+            localStorage.setItem('labourTemplates', JSON.stringify(templates));
+            
+            document.getElementById('templateName').value = '';
+            loadTemplates();
+            showToast(`✓ Template "${templateName}" saved!`, 'success');
+        }
+
+        // Load templates
+        function loadTemplates() {
+            const templates = JSON.parse(localStorage.getItem('labourTemplates') || '[]');
+            const templateList = document.getElementById('templateList');
+            
+            if (templates.length === 0) {
+                templateList.innerHTML = '<p style="font-size: 12px; color: #999; text-align: center; padding: 10px;">No saved templates</p>';
+                return;
+            }
+            
+            templateList.innerHTML = templates.map((template, index) => `
+                <div class="template-item">
+                    <span class="template-item-name">${template.name}</span>
+                    <div class="template-actions">
+                        <button class="action-btn secondary" style="font-size: 11px; padding: 6px 10px;" onclick="applyTemplate(${index})">Apply</button>
+                        <button class="action-btn danger" onclick="deleteTemplate(${index})">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Apply template
+        function applyTemplate(index) {
+            const templates = JSON.parse(localStorage.getItem('labourTemplates') || '[]');
+            const template = templates[index];
+            
+            document.getElementById('defaultAM').value = template.defaultAM;
+            document.getElementById('defaultPM').value = template.defaultPM;
+            
+            document.querySelectorAll('.day-checkbox').forEach(checkbox => {
+                checkbox.checked = template.workingDays.includes(checkbox.value);
+            });
+            
+            showToast(`✓ Template "${template.name}" loaded!`, 'success');
+        }
+
+        // Delete template
+        function deleteTemplate(index) {
+            showConfirm('Delete this template?', () => {
+                let templates = JSON.parse(localStorage.getItem('labourTemplates') || '[]');
+                const deletedName = templates[index].name;
+                templates.splice(index, 1);
+                localStorage.setItem('labourTemplates', JSON.stringify(templates));
+                loadTemplates();
+                showToast(`✓ Deleted "${deletedName}"`, 'success');
+            });
+        }
+
+        // Load templates on page load
+        window.addEventListener('load', function() {
+            loadTemplates();
+        });
 
         // Toggle Quick Fill Section
         function toggleQuickFill() {
@@ -1145,9 +1805,12 @@
             const monthInput = document.getElementById('month').value;
             
             if (!monthInput) {
-                alert('Please select a month first!');
+                showToast('Please select a month first!', 'warning');
                 return;
             }
+            
+            // Show loading toast
+            showToast('Generating PDF...', 'success');
             
             // Load jsPDF library
             if (typeof jspdf === 'undefined') {
@@ -1155,6 +1818,9 @@
                 script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
                 script.onload = function() {
                     generatePDF();
+                };
+                script.onerror = function() {
+                    showToast('Failed to load PDF library. Please check your connection.', 'error');
                 };
                 document.head.appendChild(script);
             } else {
@@ -1292,6 +1958,9 @@
             // Save the PDF
             const fileName = `Labour_Card_${name.replace(/\s+/g, '_')}_${monthName}_${year}.pdf`;
             doc.save(fileName);
+            
+            // Show success message
+            showToast(`✓ PDF downloaded: ${fileName}`, 'success');
         }
     </script>
 
