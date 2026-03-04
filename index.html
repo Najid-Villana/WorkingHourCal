@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Labour Timecard - Alphard Marine</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c5aa0 0%, #1e3a6b 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .header p {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .form-section {
+            padding: 20px;
+        }
+
+        .info-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0 10px 0;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 6px;
+        }
+
+        .calendar-header h3 {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .day-card {
+            background: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 8px;
+            transition: all 0.3s;
+        }
+
+        .day-card.active {
+            background: #e8eeff;
+            border-color: #667eea;
+        }
+
+        .day-number {
+            font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .time-input {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 11px;
+            margin-bottom: 4px;
+            text-align: center;
+        }
+
+        .time-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .time-label {
+            font-size: 9px;
+            color: #888;
+            text-align: center;
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        .overtime-checkbox {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 4px;
+        }
+
+        .overtime-checkbox input {
+            margin-right: 3px;
+        }
+
+        .overtime-checkbox label {
+            font-size: 9px;
+            color: #666;
+        }
+
+        .summary-section {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .summary-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .summary-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .summary-item label {
+            display: block;
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .summary-item .value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2c5aa0;
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.2s;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+
+        .reset-btn {
+            width: 100%;
+            padding: 12px;
+            background: #f5f5f5;
+            color: #666;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+
+        .reset-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .download-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .download-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+                max-width: 100%;
+            }
+            
+            .calculate-btn, .reset-btn, .download-btn {
+                display: none;
+            }
+            
+            .summary-section {
+                page-break-before: avoid;
+            }
+            
+            .day-card {
+                break-inside: avoid;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .days-grid {
+                gap: 5px;
+            }
+            
+            .day-card {
+                padding: 5px;
+            }
+            
+            .time-input {
+                padding: 4px;
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>ALPHARD MARINE EQUIPMENT</h1>
+            <p>Repairing & Maintenance Co.</p>
+            <p style="font-size: 11px; margin-top: 5px;">Labour Timecard</p>
+        </div>
+
+        <div class="form-section">
+            <div class="info-row">
+                <div class="input-group">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" placeholder="Enter name">
+                </div>
+                <div class="input-group">
+                    <label for="profession">Profession:</label>
+                    <input type="text" id="profession" placeholder="Enter profession">
+                </div>
+            </div>
+
+            <div class="info-row">
+                <div class="input-group">
+                    <label for="month">Month:</label>
+                    <input type="month" id="month">
+                </div>
+                <div class="input-group">
+                    <label for="year">Year:</label>
+                    <input type="number" id="year" placeholder="2026" min="2020" max="2050">
+                </div>
+            </div>
+
+            <div class="calendar-header">
+                <h3>Working Hours</h3>
+                <span id="daysInMonth" style="font-size: 12px; color: #666;"></span>
+            </div>
+
+            <div class="days-grid" id="daysGrid"></div>
+
+            <button class="calculate-btn" onclick="calculateTotals()">Calculate Total Hours</button>
+            <button class="reset-btn" onclick="resetForm()">Reset Form</button>
+        </div>
+
+        <div class="summary-section">
+            <div class="summary-title">Monthly Summary</div>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <label>Total Days Worked</label>
+                    <div class="value" id="totalDays">0</div>
+                </div>
+                <div class="summary-item">
+                    <label>Regular Hours</label>
+                    <div class="value" id="regularHours">0</div>
+                </div>
+                <div class="summary-item">
+                    <label>Overtime Hours</label>
+                    <div class="value" id="overtimeHours">0</div>
+                </div>
+                <div class="summary-item">
+                    <label>Total Hours</label>
+                    <div class="value" id="totalHours">0</div>
+                </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
+                <button class="download-btn" onclick="downloadPDF()">📥 Download PDF</button>
+                <button class="download-btn" onclick="window.print()">🖨️ Print</button>
+            </div>
+        </div>
+        
+        <!-- Hidden print template -->
+        <div id="printTemplate" style="display: none;">
+            <!-- This will be populated dynamically for printing -->
+        </div>
+    </div>
+
+    <script>
+        // Initialize the calendar
+        function initializeCalendar() {
+            const monthInput = document.getElementById('month');
+            const yearInput = document.getElementById('year');
+            
+            // Set current month and year
+            const today = new Date();
+            const currentYear = today.getFullYear();
+            const currentMonth = String(today.getMonth() + 1).padStart(2, '0');
+            
+            monthInput.value = `${currentYear}-${currentMonth}`;
+            yearInput.value = currentYear;
+            
+            generateDaysGrid();
+        }
+
+        // Generate days grid based on selected month
+        function generateDaysGrid() {
+            const monthInput = document.getElementById('month').value;
+            if (!monthInput) return;
+            
+            const [year, month] = monthInput.split('-');
+            const daysInMonth = new Date(year, month, 0).getDate();
+            
+            document.getElementById('daysInMonth').textContent = `${daysInMonth} days`;
+            
+            const daysGrid = document.getElementById('daysGrid');
+            daysGrid.innerHTML = '';
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayCard = document.createElement('div');
+                dayCard.className = 'day-card';
+                dayCard.innerHTML = `
+                    <div class="day-number">${day}</div>
+                    <span class="time-label">AM</span>
+                    <input type="time" class="time-input am-time" data-day="${day}">
+                    <span class="time-label">PM</span>
+                    <input type="time" class="time-input pm-time" data-day="${day}">
+                    <div class="overtime-checkbox">
+                        <input type="checkbox" id="ot-${day}" class="ot-check" data-day="${day}">
+                        <label for="ot-${day}">OT</label>
+                    </div>
+                `;
+                daysGrid.appendChild(dayCard);
+                
+                // Add event listeners to highlight active days
+                const inputs = dayCard.querySelectorAll('input');
+                inputs.forEach(input => {
+                    input.addEventListener('change', function() {
+                        const hasValue = dayCard.querySelector('.am-time').value || 
+                                       dayCard.querySelector('.pm-time').value ||
+                                       dayCard.querySelector('.ot-check').checked;
+                        if (hasValue) {
+                            dayCard.classList.add('active');
+                        } else {
+                            dayCard.classList.remove('active');
+                        }
+                    });
+                });
+            }
+        }
+
+        // Calculate total hours
+        function calculateTotals() {
+            let totalDays = 0;
+            let regularHours = 0;
+            let overtimeHours = 0;
+            
+            const amTimes = document.querySelectorAll('.am-time');
+            const pmTimes = document.querySelectorAll('.pm-time');
+            const otChecks = document.querySelectorAll('.ot-check');
+            
+            amTimes.forEach((amInput, index) => {
+                const amValue = amInput.value;
+                const pmValue = pmTimes[index].value;
+                const hasOT = otChecks[index].checked;
+                
+                if (amValue || pmValue) {
+                    totalDays++;
+                    
+                    // Calculate hours for AM
+                    if (amValue) {
+                        const [hours, minutes] = amValue.split(':').map(Number);
+                        regularHours += hours + (minutes / 60);
+                    }
+                    
+                    // Calculate hours for PM
+                    if (pmValue) {
+                        const [hours, minutes] = pmValue.split(':').map(Number);
+                        regularHours += hours + (minutes / 60);
+                    }
+                    
+                    // Add overtime (typically 1-2 hours)
+                    if (hasOT) {
+                        overtimeHours += 1.5; // Assuming 1.5 hours overtime average
+                    }
+                }
+            });
+            
+            const totalHours = regularHours + overtimeHours;
+            
+            // Update summary
+            document.getElementById('totalDays').textContent = totalDays;
+            document.getElementById('regularHours').textContent = regularHours.toFixed(1);
+            document.getElementById('overtimeHours').textContent = overtimeHours.toFixed(1);
+            document.getElementById('totalHours').textContent = totalHours.toFixed(1);
+            
+            // Smooth scroll to summary
+            document.querySelector('.summary-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Reset form
+        function resetForm() {
+            if (confirm('Are you sure you want to reset all data?')) {
+                document.getElementById('name').value = '';
+                document.getElementById('profession').value = '';
+                
+                const inputs = document.querySelectorAll('.time-input, .ot-check');
+                inputs.forEach(input => {
+                    if (input.type === 'checkbox') {
+                        input.checked = false;
+                    } else {
+                        input.value = '';
+                    }
+                });
+                
+                document.querySelectorAll('.day-card').forEach(card => {
+                    card.classList.remove('active');
+                });
+                
+                document.getElementById('totalDays').textContent = '0';
+                document.getElementById('regularHours').textContent = '0';
+                document.getElementById('overtimeHours').textContent = '0';
+                document.getElementById('totalHours').textContent = '0';
+            }
+        }
+
+        // Event listener for month change
+        document.getElementById('month').addEventListener('change', generateDaysGrid);
+
+        // Initialize on load
+        window.addEventListener('load', initializeCalendar);
+
+        // Download PDF functionality
+        async function downloadPDF() {
+            const name = document.getElementById('name').value || 'Labour';
+            const monthInput = document.getElementById('month').value;
+            
+            if (!monthInput) {
+                alert('Please select a month first!');
+                return;
+            }
+            
+            // Load jsPDF library
+            if (typeof jspdf === 'undefined') {
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+                script.onload = function() {
+                    generatePDF();
+                };
+                document.head.appendChild(script);
+            } else {
+                generatePDF();
+            }
+        }
+
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const name = document.getElementById('name').value || 'N/A';
+            const profession = document.getElementById('profession').value || 'N/A';
+            const monthInput = document.getElementById('month').value;
+            const [year, month] = monthInput.split('-');
+            const monthName = new Date(year, month - 1).toLocaleString('default', { month: 'long' });
+            
+            // Header
+            doc.setFillColor(44, 90, 160);
+            doc.rect(0, 0, 210, 35, 'F');
+            
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(16);
+            doc.setFont(undefined, 'bold');
+            doc.text('ALPHARD MARINE EQUIPMENT', 105, 12, { align: 'center' });
+            
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'normal');
+            doc.text('Repairing & Maintenance Co.', 105, 20, { align: 'center' });
+            doc.text('LABOUR CARD', 105, 28, { align: 'center' });
+            
+            // Info section
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(11);
+            doc.setFont(undefined, 'bold');
+            doc.text('Name:', 20, 45);
+            doc.text('Profession:', 20, 53);
+            doc.text('Month:', 120, 45);
+            doc.text('Year:', 120, 53);
+            
+            doc.setFont(undefined, 'normal');
+            doc.text(name, 50, 45);
+            doc.text(profession, 50, 53);
+            doc.text(monthName, 145, 45);
+            doc.text(year, 145, 53);
+            
+            // Working hours table
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'bold');
+            doc.text('Working Hours Summary', 20, 65);
+            
+            let yPos = 75;
+            doc.setFont(undefined, 'normal');
+            doc.setFontSize(9);
+            
+            // Table headers
+            doc.text('Day', 25, yPos);
+            doc.text('AM', 50, yPos);
+            doc.text('PM', 80, yPos);
+            doc.text('OT', 110, yPos);
+            
+            yPos += 5;
+            
+            // Draw line
+            doc.line(20, yPos, 190, yPos);
+            yPos += 5;
+            
+            // Get all entries
+            const amTimes = document.querySelectorAll('.am-time');
+            const pmTimes = document.querySelectorAll('.pm-time');
+            const otChecks = document.querySelectorAll('.ot-check');
+            
+            let entriesAdded = 0;
+            amTimes.forEach((amInput, index) => {
+                const amValue = amInput.value || '-';
+                const pmValue = pmTimes[index].value || '-';
+                const hasOT = otChecks[index].checked;
+                
+                if (amValue !== '-' || pmValue !== '-' || hasOT) {
+                    const day = index + 1;
+                    doc.text(String(day), 25, yPos);
+                    doc.text(amValue, 50, yPos);
+                    doc.text(pmValue, 80, yPos);
+                    doc.text(hasOT ? '✓' : '-', 110, yPos);
+                    yPos += 6;
+                    entriesAdded++;
+                    
+                    // Add new page if needed
+                    if (yPos > 250) {
+                        doc.addPage();
+                        yPos = 20;
+                    }
+                }
+            });
+            
+            // Summary section
+            yPos += 10;
+            doc.setFont(undefined, 'bold');
+            doc.setFontSize(11);
+            doc.text('Monthly Summary', 20, yPos);
+            yPos += 8;
+            
+            doc.setFont(undefined, 'normal');
+            doc.setFontSize(10);
+            
+            const totalDays = document.getElementById('totalDays').textContent;
+            const regularHours = document.getElementById('regularHours').textContent;
+            const overtimeHours = document.getElementById('overtimeHours').textContent;
+            const totalHours = document.getElementById('totalHours').textContent;
+            
+            doc.text(`Total Days Worked: ${totalDays}`, 25, yPos);
+            yPos += 7;
+            doc.text(`Regular Hours: ${regularHours}`, 25, yPos);
+            yPos += 7;
+            doc.text(`Overtime Hours: ${overtimeHours}`, 25, yPos);
+            yPos += 7;
+            doc.setFont(undefined, 'bold');
+            doc.text(`Total Hours: ${totalHours}`, 25, yPos);
+            
+            // Signature section
+            yPos += 20;
+            doc.setFont(undefined, 'normal');
+            doc.setFontSize(9);
+            doc.line(20, yPos, 80, yPos);
+            doc.line(130, yPos, 190, yPos);
+            yPos += 5;
+            doc.text('Signature Labour', 20, yPos);
+            doc.text('Site Foreman/Eng.', 130, yPos);
+            
+            // Footer
+            doc.setFontSize(8);
+            doc.setTextColor(128, 128, 128);
+            doc.text(`Generated on ${new Date().toLocaleDateString()}`, 105, 285, { align: 'center' });
+            
+            // Save the PDF
+            const fileName = `Labour_Card_${name.replace(/\s+/g, '_')}_${monthName}_${year}.pdf`;
+            doc.save(fileName);
+        }
+    </script>
+
+</body>
+</html>
